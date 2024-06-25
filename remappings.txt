@@ -1,0 +1,6 @@
+forge-std/=lib/forge-std/src/
+lib/openzeppelin-contracts/=lib/openzeppelin-contracts/
+src/Presale.sol/=src/Presale.sol/
+src/interfaces/=src/interfaces/
+ds-test/=lib/forge-std/lib/ds-test/src/
+openzeppelin-contracts/=lib/openzeppelin-contracts/contracts/

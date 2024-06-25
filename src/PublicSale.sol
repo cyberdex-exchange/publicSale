@@ -35,8 +35,8 @@ interface IERC20 {
     function transferFrom(address, address, uint256) external;
 }
 
-interface IPresale {
-    event PresaleInit(address indexed token, address indexed priceFeed, address indexed admin, address treasury);
+interface IPublicSale {
+    event PublicSaleInit(address indexed token, address indexed priceFeed, address indexed admin, address treasury);
     event Initialised(uint40 start, uint40 duration, uint256 price);
     event ClaimRootSet(bytes32 indexed root);
     event BuyOrder(address indexed buyer, address indexed paymentToken, uint256 payment, uint256 tokens);
@@ -57,8 +57,8 @@ interface IPresale {
     event PriceUpdate(uint256 price);
 }
 
-/// @title Presale
-contract Presale is IPresale, Ownable {
+/// @title PublicSale
+contract PublicSale is IPublicSale, Ownable {
     /*//////////////////////////////////////////////////////////////
                                 STATE
     //////////////////////////////////////////////////////////////*/
@@ -100,7 +100,7 @@ contract Presale is IPresale, Ownable {
         uint120 usdt; // Total USDT used as payment (6 decimals).
         uint120 usdc; // Total USDC used as payment (6 decimals).
         uint120 eth; // Total ETH used as payment (18 decimals).
-        uint120 tokens; // Total presale tokens ordered.
+        uint120 tokens; // Total publicSale tokens ordered.
         bool claimed; // Whether the order has been claimed.
     }
 
@@ -153,7 +153,7 @@ contract Presale is IPresale, Ownable {
         admin = _admin;
         treasury = _treasury;
 
-        emit PresaleInit(_token, _priceFeed, _admin, _treasury);
+        emit PublicSaleInit(_token, _priceFeed, _admin, _treasury);
     }
 
     /// @notice Sets up the sale.
@@ -224,7 +224,7 @@ contract Presale is IPresale, Ownable {
                             CREATE BUY ORDERS
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Allows users to create an order to purchase presale tokens usdc, usdt or dai.
+    /// @notice Allows users to create an order to purchase publicSale tokens usdc, usdt or dai.
     /// @dev The buy event is used for the backend bot to determine the orders.
     /// @param _purchaseAmount Amount of usd value in the ERC20 token's decimal units
     /// @param _paymentToken Token paying with.
@@ -259,7 +259,7 @@ contract Presale is IPresale, Ownable {
         emit BuyOrder(msg.sender, _paymentToken, _purchaseAmount, _tokens);
     }
 
-    /// @notice Allows users to create an order to purchase presale tokens w/ ETH.
+    /// @notice Allows users to create an order to purchase publicSale tokens w/ ETH.
     /// @dev The buy event is used for the backend bot to determine the orders.
     function createBuyOrderEth() external payable onlyInit {
         if (msg.value < 1) revert ZeroAmount();
@@ -291,7 +291,7 @@ contract Presale is IPresale, Ownable {
     /// @dev Set owner as the treasury claimer to receive all used USDC + unsold tokens.
     ///      E.g, 90/100 tokens sold for 45 usdc paid; owner claims 10 tokens + 45 USDC.
     /// @param _claimer The EOA claiming on behalf for by the caller.
-    /// @param _filledTokens Total presale tokens being sent to `_claimer`.
+    /// @param _filledTokens Total publicSale tokens being sent to `_claimer`.
     /// @param _unusedUsdc Total USDC amount, that weren't used to buy `token`, being sent to `_claimer`.
     /// @param _unusedUsdt Total USDT amount, that weren't used to buy `token`, being sent to `_claimer`.
     /// @param _unusedDai Total DAI amount, that weren't used to buy `token`, being sent to `_claimer`.

@@ -96,8 +96,8 @@ contract PublicSale is IPublicSale, Ownable {
 
     /// Root used to set the claim statistics.
     bytes32 public claimRoot;
-	
-	uint256 priceTimeout = 2 hours;
+
+    uint256 priceTimeout = 2 hours;
 
     struct Receipt {
         uint120 dai; // Total DAI used as payment (18 decimals).
@@ -224,12 +224,12 @@ contract PublicSale is IPublicSale, Ownable {
         emit DurationUpdate(_duration);
     }
 
-	/// @notice allows the admin to set the priceTimeout for the oracle
-	/// @param _priceTimeout the duration after which price is assumed to be stale
-	function setPriceTimeout(uint256 _priceTimeout) external {
-		if (msg.sender != admin) revert NoAccess();
-		priceTimeout = _priceTimeout;
-	}
+    /// @notice allows the admin to set the priceTimeout for the oracle
+    /// @param _priceTimeout the duration after which price is assumed to be stale
+    function setPriceTimeout(uint256 _priceTimeout) external {
+        if (msg.sender != admin) revert NoAccess();
+        priceTimeout = _priceTimeout;
+    }
 
     /*//////////////////////////////////////////////////////////////
                             CREATE BUY ORDERS
@@ -444,9 +444,9 @@ contract PublicSale is IPublicSale, Ownable {
 
     /// @notice get the latest price for eth from Chainlink's Aggregator PriceFeed
     function _getLatestPrice() internal view returns (int256) {
-		(, int256 _price,, uint256 updatedAt,) = priceFeed.latestRoundData();
-		if (_price <= 0) revert IncorrectOracleAnswer();
-		if (block.timestamp - updatedAt > priceTimeout) revert StaleEthPrice();
+        (, int256 _price,, uint256 updatedAt,) = priceFeed.latestRoundData();
+        if (_price <= 0) revert IncorrectOracleAnswer();
+        if (block.timestamp - updatedAt > priceTimeout) revert StaleEthPrice();
         return _price;
     }
 

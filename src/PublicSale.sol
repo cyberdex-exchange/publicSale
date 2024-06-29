@@ -24,6 +24,8 @@ error ZeroAddress();
 error ZeroAmount();
 error MoreThanBalance();
 error NoAccess();
+error IncorrectOracleAnswer();
+error StaleEthPrice();
 
 /*//////////////////////////////////////////////////////////////
                           INTERFACES
@@ -433,7 +435,10 @@ contract PublicSale is IPublicSale, Ownable {
 
     /// @notice get the latest price for eth from Chainlink's Aggregator PriceFeed
     function _getLatestPrice() internal view returns (int256) {
-        (, int256 _price,,,) = priceFeed.latestRoundData();
+		uint256 priceTimeout = 2 hours;
+		(, int256 _price,, uint256 updatedAt,) = priceFeed.latestRoundData();
+		if (_price <= 0) revert IncorrectOracleAnswer();
+		if (block.timestamp - updatedAt > priceTimeout) revert StaleEthPrice();
         return _price;
     }
 
